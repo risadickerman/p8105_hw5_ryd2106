@@ -10,3 +10,87 @@ library(tidyverse)
 library(purrr)
 ```
 
+
+## Problem 1
+
+
+
+## Problem 2
+
+-Start with a dataframe containing all file names; the list.files function will help
+-Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe
+-Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary
+-Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
+
+
+```{r load in}
+patient_files =
+  tibble(
+    files = list.files(path = "./data"),
+  ) |> 
+  mutate(
+    files = str_c("./data/",files)
+    ) |> 
+  mutate(
+  readings_per_week = map(files, read_csv) 
+  )|> 
+  mutate(
+    files = str_remove(files, "./data/"),
+    files = str_remove(files, ".csv")
+  ) |> 
+  rename(arm_subject  = files) |> 
+  separate(arm_subject, into =c("arm", "subject_id", sep = "\\_")) |> 
+  select(c(arm, subject_id, readings_per_week))
+  
+  
+files_unest = 
+  patient_files |> 
+  unnest() |> 
+  pivot_longer(cols = starts_with("week"),
+    names_to = "week",
+    values_to = "measurements"
+  )
+
+
+sphaget_plot =
+  files_unest |> 
+  mutate(
+    week = str_replace(week, "week_", ""),
+    arm = case_match(
+      arm,
+      "con" ~ "control",
+      "exp" ~ "experiment")
+    )|> 
+  ggplot(aes(x=week, y = measurements))  +
+  geom_line(
+    mapping = aes(group = subject_id, color = subject_id)) +
+  facet_grid(~arm) +
+  labs( x = "Week") +
+  labs(y = "Measurements")
+sphaget_plot
+```
+
+The data shows that while the control arm shows no marked improvement over time, the experiment arm is showing gradual increases in the measurement over the time period.
+
+
+## Problem 3
+```{r initial variables and hypothesis}
+#Initial variables
+n = 30
+sd = 5
+mu = 0
+alpha = 0.05
+
+#Ho
+mu_o = 0
+
+#removing randomness
+set.seed(5)
+```
+
+
+```{r normal distribution}
+x = rnorm(n, mu, sd)
+x
+```
+
