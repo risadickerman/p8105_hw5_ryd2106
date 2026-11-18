@@ -1,0 +1,12 @@
+---
+title: "p8105_hw5_ryd2106"
+author: "Risa Dickerman"
+date: "2026-11-17"
+output: github_document
+---
+
+```{r libraries}
+library(tidyverse)
+library(purrr)
+```
+
