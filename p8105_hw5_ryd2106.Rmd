@@ -74,6 +74,29 @@ The data shows that while the control arm shows no marked improvement over time,
 
 
 ## Problem 3
+
+. Generate 5000 datasets from the model
+
+𝑥∼𝑁𝑜𝑟𝑚𝑎𝑙[𝜇,𝜎]
+
+For each dataset, save 𝜇̂ 
+ and the p-value arising from a test of 𝐻:𝜇=0
+ using 𝛼=0.05
+. Hint: to obtain the estimate and p-value, use broom::tidy to clean the output of t.test.
+
+Repeat the above for 𝜇={1,2,3,4,5,6}
+, and complete the following:
+
+Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of 𝜇
+ on the x axis. Describe the association between effect size and power.
+Make a plot showing the average estimate of 𝜇̂ 
+ on the y axis and the true value of 𝜇
+ on the x axis. Make a second plot (or overlay on the first) the average estimate of 𝜇̂ 
+ only in samples for which the null was rejected on the y axis and the true value of 𝜇
+ on the x axis. Is the sample average of 𝜇̂ 
+ across tests for which the null is rejected approximately equal to the true value of 𝜇
+? Why or why not?
+
 ```{r initial variables and hypothesis}
 #Initial variables
 n = 30
@@ -85,12 +108,58 @@ alpha = 0.05
 mu_o = 0
 
 #removing randomness
-set.seed(5)
+#set.seed(5)
 ```
 
 
 ```{r normal distribution}
-x = rnorm(n, mu, sd)
-x
+norm_mu_sd = function(n = 30, mu = 0, sd = 5) {
+  
+  data = tibble(
+    x = rnorm(n,mu,sd)
+  )
+
+list =
+  data |> 
+  summarize(
+    mu_hat = mean(x),
+    sd_hat = sd(x)
+  )
+list
+}
+
+```
+
+```{r repetition}
+samples = 5000
+
+output_sim = vector("list", samples)
+
+for (i in 1:samples) {
+  output_sim[[i]] = norm_mu_sd()
+}
+
+
+
+output_sim =
+  output_sim |> 
+  bind_rows() 
+output_sim
+
+t_test = t.test(output_sim$mu_hat, mu=0) |> 
+  broom::tidy()
+t_test
+
+rep_norm_mu = 
+  expand_grid(
+    iter = 1:5000
+  ) |> 
+  mutate(
+    estimates = map(n, norm_mu_sd)
+  ) |> 
+  bind_rows() |> 
+  unnest(estimates)
+
+rep_norm_mu
 ```
 
