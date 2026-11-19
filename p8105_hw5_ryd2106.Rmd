@@ -45,7 +45,7 @@ birthday_results_df |>
   labs( x = "Group Size") +
   labs( y = "Probability of a Repeat")
 ```
-These results indicate that as the group size increases the probability of having two members with the same birthday increases. At first this follows and exponential increase until around a group of 15, at this point it becomes a steady rise. At a group size of 35 this increase starts leveling off. While not reaching 1, the probability does get close.
+These results indicate that as the group size increases the probability of having two members with the same birthday increases. At first this follows a steep increase until around a group of 15, at this point it becomes a steady rise. At a group size of 35 this increase starts leveling off. While not reaching 1, the probability does get close.
 
 
 ## Problem 2
@@ -68,9 +68,8 @@ patient_files =
   rename(arm_subject  = files) |> 
   separate(
     arm_subject, 
-    into =c("arm", "subject_id", 
-            sep = "_")
-    ) |> 
+    into =c("arm", "subject_id"), 
+            sep = "_") |> 
   select(c(arm, subject_id, readings_per_week))
   
   
